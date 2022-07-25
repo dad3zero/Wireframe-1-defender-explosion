@@ -56,6 +56,18 @@ def draw():
 
 # This function updates the array of particles
 
+def update_particle_data(x, y, vx, vy, age, delay):
+    drag = DRAG ** delay
+    vx *= drag
+    vy *= drag
+
+    x += vx * delay
+    y += vy * delay
+
+    age += delay
+
+    return x, y, vx, vy, age
+
 def update(dt):
 
     # to update the particle array, create a new empty array
@@ -68,20 +80,7 @@ def update(dt):
         if age + dt > MAX_AGE:
             continue
             
-        # update the particle's velocity - they slow down over time
-        drag = DRAG ** dt
-        vx *= drag
-        vy *= drag
-        
-        # update the particle's position according to its velocity
-        x += vx * dt
-        y += vy * dt
-        
-        # update the particle's age
-        age += dt
-        
-        # add the particle's new position, velocity and age to the new array
-        new_particles.append((x, y, vx, vy, age))
+        new_particles.append(update_particle_data(x, y, vx, vy, age, dt))
         
     # replace the current array with the new one
     particles[:] = new_particles
