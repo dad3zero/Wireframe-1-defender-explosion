@@ -53,10 +53,11 @@ def draw():
         screen.surface.set_at((int(x), int(y)), PARTICLE_COLOR)
 
 
-def update_particle_data(x, y, vx, vy, age, delay):
+def update_particle_data(particle, delay):
     """
     This function updates the array of particles
     """
+    x, y, vx, vy, age = particle
 
     drag = DRAG ** delay
     vx *= drag
@@ -70,9 +71,9 @@ def update_particle_data(x, y, vx, vy, age, delay):
     return x, y, vx, vy, age
 
 def update(dt):
-    particles[:] = [update_particle_data(x, y, vx, vy, age, dt)
-                    for x, y, vx, vy, age in particles
-                    if age + dt <= MAX_AGE]
+    particles[:] = [update_particle_data(particle, dt)
+                    for particle in particles
+                    if particle[4] + dt <= MAX_AGE]
 
 def explode_random():
     """
@@ -87,4 +88,4 @@ def explode_random():
     explode(x, y)
 
 # call the random explosion function every 1.5 seconds
-clock.schedule_interval(explode_random, 1.5)
+#clock.schedule_interval(explode_random, 1.5)
