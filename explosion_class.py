@@ -14,6 +14,28 @@ MAX_AGE = 3  # the time in seconds for which a particle is displayed
 
 particles = []  # an array to hold the details of the explosion particles on the screen
 
+class Particle:
+    __slots__ = ("x", "y", "vx", "vy", "age")
+    def __init__(self, x, y, vx, vy, age):
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
+        self.age = age
+
+    def update_data(self, delay):
+        drag = DRAG ** delay
+        self.vx *= drag
+        self.vy *= drag
+
+        self.x += self.vx * delay
+        self.y += self.vy * delay
+
+        self.age += delay
+
+    def is_alive(self):
+        self.age <= MAX_AGE
+
 
 def explode(x, y, speed=300):
     """
@@ -28,7 +50,7 @@ def explode(x, y, speed=300):
     for _ in range(100):
     
         # for each particle, generate a random angle and distance
-        angle = random.uniform (0, 2 * math.pi)
+        angle = random.uniform(0, 2 * math.pi)
         radius = random.uniform(0, 1) ** 0.5
 
         # convert angle and distance from the explosion point into x and y velocity for the particle
@@ -36,7 +58,7 @@ def explode(x, y, speed=300):
         vy = speed * radius * math.cos(angle)
         
         # add the particle's position, velocity and age to the array
-        particles.append((x, y, vx, vy, age))
+        particles.append(Particle(x, y, vx, vy, age))
 
 
 def draw():
@@ -53,23 +75,6 @@ def draw():
         # for each particle in the array, plot its position on the screen
         screen.surface.set_at((int(x), int(y)), PARTICLE_COLOR)
 
-
-def update_particle_data(particle, delay):
-    """
-    This function updates the array of particles
-    """
-    x, y, vx, vy, age = particle
-
-    drag = DRAG ** delay
-    vx *= drag
-    vy *= drag
-
-    x += vx * delay
-    y += vy * delay
-
-    age += delay
-
-    return x, y, vx, vy, age
 
 def update(dt):
     particles[:] = [update_particle_data(particle, dt)

@@ -1,5 +1,8 @@
 import random
 import math
+from collections import namedtuple
+
+Particle = namedtuple("Particle", ("x", "y", "vx", "vy", "age"))
 
 # the size of the screen
 WIDTH = 800
@@ -21,7 +24,6 @@ def explode(x, y, speed=300):
     """
 
     # these are new particles, so set their age to zero
-    particles.clear()
     age = 0     
     
     # generate 100 particles per explosion
@@ -36,7 +38,7 @@ def explode(x, y, speed=300):
         vy = speed * radius * math.cos(angle)
         
         # add the particle's position, velocity and age to the array
-        particles.append((x, y, vx, vy, age))
+        particles.append(Particle(x, y, vx, vy, age))
 
 
 def draw():
@@ -54,27 +56,27 @@ def draw():
         screen.surface.set_at((int(x), int(y)), PARTICLE_COLOR)
 
 
-def update_particle_data(particle, delay):
+def update_particle_data(particle: Particle, delay):
     """
     This function updates the array of particles
     """
-    x, y, vx, vy, age = particle
+
 
     drag = DRAG ** delay
-    vx *= drag
-    vy *= drag
+    vx = particle.vx * drag
+    vy = particle.vy * drag
 
-    x += vx * delay
-    y += vy * delay
+    x = particle.x + vx * delay
+    y = particle.y + vy * delay
 
-    age += delay
+    age = particle.age + delay
 
-    return x, y, vx, vy, age
+    return Particle(x, y, vx, vy, age)
 
 def update(dt):
     particles[:] = [update_particle_data(particle, dt)
                     for particle in particles
-                    if particle[4] + dt <= MAX_AGE]
+                    if particle.age + dt <= MAX_AGE]
 
 def explode_random():
     """
