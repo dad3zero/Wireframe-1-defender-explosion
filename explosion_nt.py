@@ -2,6 +2,8 @@ import random
 import math
 from collections import namedtuple
 
+import pgzrun
+
 Particle = namedtuple("Particle", ("x", "y", "vx", "vy", "age"))
 
 # the size of the screen
@@ -11,7 +13,7 @@ HEIGHT = 600
 
 DRAG = 0.8  # how much a particle slows down by each second
 
-PARTICLE_COLOR = 255, 230, 128  # the colour of each particle in R, G, B values
+PARTICLE_COLOR = 255, 230, 178  # the colour of each particle in R, G, B values
 
 MAX_AGE = 3  # the time in seconds for which a particle is displayed
 
@@ -91,4 +93,6 @@ def explode_random():
     explode(x, y)
 
 # call the random explosion function every 1.5 seconds
-#clock.schedule_interval(explode_random, 1.5)
+clock.schedule_interval(explode_random, 1.5)
+
+pgzrun.go()

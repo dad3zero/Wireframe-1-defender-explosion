@@ -1,64 +1,16 @@
 import random
-import math
+
+import pgzrun
+
+from events import explosions_dataclass as ev_explosions
 
 # the size of the screen
 WIDTH = 800
 HEIGHT = 600
 
-
-DRAG = 0.8  # how much a particle slows down by each second
-
 PARTICLE_COLOR = 255, 230, 128  # the colour of each particle in R, G, B values
 
-MAX_AGE = 3  # the time in seconds for which a particle is displayed
-
-particles = []  # an array to hold the details of the explosion particles on the screen
-
-class Particle:
-    __slots__ = ("x", "y", "vx", "vy", "age")
-    def __init__(self, x, y, vx, vy, age):
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-        self.age = age
-
-    def update_data(self, delay):
-        drag = DRAG ** delay
-        self.vx *= drag
-        self.vy *= drag
-
-        self.x += self.vx * delay
-        self.y += self.vy * delay
-
-        self.age += delay
-
-    def is_alive(self):
-        self.age <= MAX_AGE
-
-
-def explode(x, y, speed=300):
-    """
-    This function creates a new explosion at the specified screen co-ordinates
-    """
-
-    # these are new particles, so set their age to zero
-    particles.clear()
-    age = 0     
-    
-    # generate 100 particles per explosion
-    for _ in range(100):
-    
-        # for each particle, generate a random angle and distance
-        angle = random.uniform(0, 2 * math.pi)
-        radius = random.uniform(0, 1) ** 0.5
-
-        # convert angle and distance from the explosion point into x and y velocity for the particle
-        vx = speed * radius * math.sin(angle)
-        vy = speed * radius * math.cos(angle)
-        
-        # add the particle's position, velocity and age to the array
-        particles.append(Particle(x, y, vx, vy, age))
+explosions = []  # an array to hold the details of the explosion particles on the screen
 
 
 def draw():
@@ -70,16 +22,17 @@ def draw():
     screen.clear()
     
     # loop through all the particles in the array
-    for x, y, *_ in particles:
-        
-        # for each particle in the array, plot its position on the screen
-        screen.surface.set_at((int(x), int(y)), PARTICLE_COLOR)
+    for explosion in explosions:
+        for particle in explosion.particles:
+
+            # for each particle in the array, plot its position on the screen
+            screen.surface.set_at((int(particle.x), int(particle.y)), PARTICLE_COLOR)
 
 
 def update(dt):
-    particles[:] = [update_particle_data(particle, dt)
-                    for particle in particles
-                    if particle[4] + dt <= MAX_AGE]
+    for explosion in explosions:
+        for particle in explosion.particles:
+            particle.update_data(dt)
 
 def explode_random():
     """
@@ -91,7 +44,9 @@ def explode_random():
     y = random.randrange(HEIGHT)
     
     # call the explosion function for that position
-    explode(x, y)
+    explosions.append(ev_explosions.Explosion(x, y))
 
 # call the random explosion function every 1.5 seconds
-#clock.schedule_interval(explode_random, 1.5)
+clock.schedule_interval(explode_random, 1.5)
+
+pgzrun.go()
