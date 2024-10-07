@@ -15,14 +15,14 @@ MAX_AGE = 3  # the time in seconds for which a particle is displayed
 particles = []  # an array to hold the details of the explosion particles on the screen
 
 
-def explode(x, y, speed=300):
+def explode(x:int, y:int, speed: int = 300) -> list[tuple]:
     """
     This function creates a new explosion at the specified screen co-ordinates
     """
 
     # these are new particles, so set their age to zero
-    particles.clear()
-    age = 0     
+    particles = []
+    age = 0
     
     # generate 100 particles per explosion
     for _ in range(100):
@@ -37,6 +37,8 @@ def explode(x, y, speed=300):
         
         # add the particle's position, velocity and age to the array
         particles.append((x, y, vx, vy, age))
+
+    return particles
 
 
 def draw():
@@ -71,10 +73,11 @@ def update_particle_data(particle, delay):
 
     return x, y, vx, vy, age
 
-def update(dt):
+def update(particles:list[tuple], dt):
     particles[:] = [update_particle_data(particle, dt)
                     for particle in particles
                     if particle[4] + dt <= MAX_AGE]
+
 
 def explode_random():
     """
@@ -86,7 +89,7 @@ def explode_random():
     y = random.randrange(HEIGHT)
     
     # call the explosion function for that position
-    explode(x, y)
+    return explode(x, y)
 
 # call the random explosion function every 1.5 seconds
 #clock.schedule_interval(explode_random, 1.5)
